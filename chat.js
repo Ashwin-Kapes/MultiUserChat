@@ -1,10 +1,12 @@
 
 var chatURL = "chat.php";
+var getUserURL = "getUsers.php";
 var xmlHttpGetMessages = createXmlHttpRequestObject();
-var updateInterval = 1000;
+var updateInterval = 1500; //Retrive data from server after every sec
 var debugMode = true;
 var lastMessageID = -1; 
- 
+
+//Thifunction successfully return an XMLHttpRequest object used to send and receive data from server
 function createXmlHttpRequestObject() 
 {
   var xmlHttp;
@@ -14,6 +16,7 @@ function createXmlHttpRequestObject()
   }
   catch(e)
   {
+	  //Fol old verdion browser or IE
     var XmlHttpVersions = new Array("MSXML2.XMLHTTP.6.0", "MSXML2.XMLHTTP.5.0", "MSXML2.XMLHTTP.4.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP");
     for (var i=0; i<XmlHttpVersions.length && !xmlHttp; i++) 
     {
@@ -30,23 +33,21 @@ function createXmlHttpRequestObject()
     return xmlHttp;
 }
 
+//init() displays the chatbox when page loads and retrives all the messages
 function init() 
 {
   var oMessageBox = document.getElementById("messageBox");
   oMessageBox.setAttribute("autocomplete", "off");    
-  checkUsername();
   requestNewMessages();
+
 }
 
-function checkUsername()
-{
-  var oUser=document.getElementById("userName");
-  if(oUser.value == "")
-    oUser.value = "User-" + Math.floor(Math.random() * 1000);
-}
-
+//Validates and send message tp server submitted by user
 function sendMessage()
 {
+    alert("ERROR: Username is mandatory to chat");
+	}else
+	
   var CurrentMessage = document.getElementById("messageBox");
   var currentUser = document.getElementById("userName").value;
   if (trim(CurrentMessage.value) != "" && trim(currentUser) != "" )
@@ -65,6 +66,7 @@ CurrentMessage.value = "";
   }
 }
 
+//This function is called after every second using setTimeout function to fetch chat
 function requestNewMessages()
 {  
   var currentUser = document.getElementById("userName").value;
@@ -82,6 +84,7 @@ xmlHttpGetMessages.open("POST", chatURL);
 xmlHttpGetMessages.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 xmlHttpGetMessages.onreadystatechange = handleReceivingMessages;
 xmlHttpGetMessages.send(json_object);
+setTimeout("getUser();", updateInterval);
       }
       else
       {
@@ -95,6 +98,29 @@ xmlHttpGetMessages.send(json_object);
   }
 }
 
+//Get users list participated in chat
+function getUser(){
+xmlHttpGetMessages.onreadystatechange = function() {
+    if (xmlHttpGetMessages.readyState == 4 && xmlHttpGetMessages.status == 200) {
+        var myArr = JSON.parse(xmlHttpGetMessages.responseText);
+        displayUser(myArr);//Call displayUser function to print list fo users 
+    }
+};
+xmlHttpGetMessages.open("GET", getUserURL, true);
+xmlHttpGetMessages.send();
+ // setTimeout("requestNewMessages();", updateInterval);
+function displayUser(arr) {
+    var out = "";
+    var i;
+    for(i = 0; i < arr.length; i++) {
+        out += "<li>"+arr[i].Name+"</li>";
+    }
+    document.getElementById("users").innerHTML = out;
+}
+	}
+
+	
+//Handle response from server
 function handleReceivingMessages() 
 {
   if (xmlHttpGetMessages.readyState == 4) 
@@ -117,6 +143,7 @@ function handleReceivingMessages()
   }
 }
 
+//Manage response from server and put in array
 function readMessages()
 {  
   var response = xmlHttpGetMessages.responseText;
@@ -138,6 +165,7 @@ function readMessages()
   setTimeout("requestNewMessages();", updateInterval);
 }
 
+//Formatting data to display as individual item
 function displayMessages(idArray, nameArray, messageArray)
 {
   for(var i=0; i<idArray.length; i++)
@@ -152,7 +180,7 @@ function displayMessages(idArray, nameArray, messageArray)
     displayMessage (htmlMessage);
   }
 }
-
+//Display the final output
 function displayMessage(message)
 {
   var oScroll = document.getElementById("scroll");
@@ -161,11 +189,13 @@ function displayMessage(message)
   oScroll.scrollTop = scrollDown ? oScroll.scrollHeight : oScroll.scrollTop;
 }
 
+//This function display any returned from server
 function displayError(message)
 {
   displayMessage("Error accessing the server! "+(debugMode ? "<br/>" + message : ""));
 }
- 
+
+//This function handles the key event when user prsses the ENTER key
 function handleKey(e) 
 {
   e = (!e) ? window.event : e;      
@@ -180,10 +210,8 @@ function handleKey(e)
     }
   }
 }
-
+//Trim function for unwanted spaces
 function trim(s)
 {
     return s.replace(/(^\s+)|(\s+$)/g, "")
 }
-
-

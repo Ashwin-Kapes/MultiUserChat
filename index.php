@@ -14,6 +14,7 @@ body {
 	width: 375px;
 	height: 270px;
 	overflow: auto;	
+	border-right:1px solid #000;
 }
 #chatBox{
 	position: absolute;
@@ -33,11 +34,18 @@ body {
 <div id="chatBox">
 <table id="content">
   <tr>
-    <td><div id="scroll"> </div></td>
+    <td><div id="scroll"></div></td>
+  <td>
+  <div id="scroll">
+  <h4>List of Users participated in chat</h4>
+  <ul id="users" style="list-style:circle">
+  </ul>
+  </div>
+  </td>
   </tr>
 </table>
 <div>
-  <input type="text" id="userName" maxlength="10" size="10" onblur="checkUsername();" readonly="readonly" />
+  <input type="text" id="userName" maxlength="10" size="10" placeholder="Enter Username" required/>
   <input type="text" id="messageBox" maxlength="2000" size="50" onkeydown="handleKey(event)"/>
   <input type="button" value="Send" onclick="sendMessage();" />
 </div>
@@ -45,7 +53,7 @@ body {
 <script type="text/javascript">
 window.onload = function()
       {
-          init();
+          init();//This function executed when page loads
       };
 </script>
 </body>

@@ -1,12 +1,12 @@
 <?php
-require_once('error_handler.php');
+require_once('error_handler.php');//Include this to handle any error at server
 class Chat extends SQLite3
 {
       function __construct()
       {
          $this->open('chatting.db');
       }
-	  
+//Create table in database if not exist	  
 public function CreateTable()
   {
     $CT =<<<EOF
@@ -18,7 +18,7 @@ public function CreateTable()
 EOF;
     $this->exec($CT);      
   }	  
-
+//Insert chat in DB
 public function postMessage($name, $message)
   {  
     $name = $name;
@@ -29,7 +29,9 @@ public function postMessage($name, $message)
 EOF;
     $result = $this->exec($query);      
   }
-  public function retrieveNewMessages($id=0) 
+  
+//Fetches new messages from server  
+public function retrieveNewMessages($id=0) 
   {	  
     $id = $id;
     if($id>0)
@@ -64,7 +66,27 @@ EOF;
     $response = $response . '</response>';
     return $response;    
   }
-
+//fetches the list of users participaed in chat
+public function getUsers(){
+	$sql =<<<EOF
+SELECT DISTINCT user_name FROM CHAT ORDER BY chat_id DESC;
+EOF;
+    $result = $this->query($sql);
+    //$response .= $this->isDatabaseCleared($id);
+	$userName = array();
+    if($result)
+    { 
+	$outp = "[";     
+      while ($row = $result->fetchArray(SQLITE3_ASSOC))
+      {        
+          if ($outp != "[") {$outp .= ",";}
+    $outp .= '{"Name":"'.$row["user_name"].'"}';
+}
+$outp .="]";	  
+    } 
+    return $outp; //Returning output as array   
+}
+//Check for database is cleared or not	
 private function isDatabaseCleared($id)
   {
     if($id>0)
