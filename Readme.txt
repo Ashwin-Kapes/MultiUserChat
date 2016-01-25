@@ -1,6 +1,5 @@
--This application is written in PHP which can be executed on WAMP,LAMP or XAMPP.
--Languages usead are: Javascript,HTML,CSS,PHP
+-This application is written in PHP, Javascript 
 -DATABASE used: SQLite3
--Using JAVA and XMLHttpRequest object data can be sent to server in JSON format over HTTP.
--Polling is done using setInterval() method. Default time is 1000ms.
--Same can be acheived using AJAX or jQuery. Content type can be changed to application/json.
+-Using JS and XMLHttpRequest object, data can be sent/received to server in JSON format over HTTP.
+-Polling is done using setTimeout method. Default time is 1000ms.
+-Same can be acheived using AJAX or jQuery.
