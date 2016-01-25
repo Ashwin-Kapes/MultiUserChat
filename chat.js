@@ -45,6 +45,8 @@ function init()
 //Validates and send message tp server submitted by user
 function sendMessage()
 {
+	 var oUser=document.getElementById("userName");
+  if(oUser.value == ""){
     alert("ERROR: Username is mandatory to chat");
 	}else
 	
